@@ -1,0 +1,26 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: reactor-rates-sentinel
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5434}/${DB_NAME:nomad_db}
+    username: ${DB_USER:nomad_user}
+    password: ${DB_PASS:secret}
+    pool:
+      max-size: 20
+      initial-size: 5
+      max-create-connection-time: 3s
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5434}/${DB_NAME:nomad_db}
+    user: ${DB_USER:nomad_user}
+    password: ${DB_PASS:secret}
+
+parser:
+  nbk:
+    url: https://nationalbank.kz/ru/exchangerates/ezhednevnye-oficialnye-rynochnye-kursy-valyut
+  xe:
+    url-template: https://www.xe.com/currencyconverter/convert/?Amount=1&From=%s&To=KZT
