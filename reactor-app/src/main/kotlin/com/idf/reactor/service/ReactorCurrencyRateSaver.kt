@@ -19,7 +19,6 @@ class ReactorCurrencyRateSaver(
 ) {
     private val log = LoggerFactory.getLogger(ReactorCurrencyRateSaver::class.java)
 
-    @Transactional
     fun saveRateWithRetry(dto: CurrencyRateCreateDto): Mono<CurrencyRate> {
         return repository.findByCodeAndSourceId(dto.code, dto.sourceId)
             .flatMap { existing ->
@@ -31,7 +30,7 @@ class ReactorCurrencyRateSaver(
                 )
             })
             .retryWhen(
-                Retry.backoff(3, Duration.ofMillis(50))
+                Retry.backoff(15, Duration.ofMillis(50))
                     .filter { it is OptimisticLockingFailureException }
                     .doBeforeRetry { signal ->
                         log.warn("Конфликт версий (${dto.sourceId}). Попытка: ${signal.totalRetries() + 1}")

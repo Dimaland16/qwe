@@ -13,9 +13,8 @@ import org.springframework.transaction.annotation.Transactional
 class CurrencyRateSaver(
     private val repository: CurrencyRateRepository
 ) {
-    @Transactional
     fun saveRateWithRetry(dto: CurrencyRateCreateDto) {
-        val maxRetries = 3
+        val maxRetries = 15
         var attempt = 0
 
         while (attempt < maxRetries) {
@@ -39,7 +38,7 @@ class CurrencyRateSaver(
                 if (attempt == maxRetries) {
                     throw CurrencySyncException("Не удалось обновить курс ${dto.sourceId} после $maxRetries попыток", e)
                 }
-                Thread.sleep(50)
+                Thread.sleep((50..250).random().toLong())
             }
         }
     }
