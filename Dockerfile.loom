@@ -1,10 +1,10 @@
-FROM openjdk:24-jdk-slim AS builder
+FROM eclipse-temurin:24-jdk AS builder
 WORKDIR /app
 COPY . .
 RUN chmod +x gradlew
 RUN ./gradlew :loom-app:bootJar --no-daemon
 
-FROM openjdk:24-slim
+FROM eclipse-temurin:24-jre
 WORKDIR /app
 COPY --from=builder /app/loom-app/build/libs/*.jar app.jar
 ENTRYPOINT ["java", "-Xmx256m", "-Xms256m", "-jar", "app.jar"]
