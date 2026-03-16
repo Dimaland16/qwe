@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.servlet.resource.NoResourceFoundException
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
@@ -41,6 +42,11 @@ class GlobalExceptionHandler {
     ): ResponseEntity<ErrorResponseDto> {
         log.error("Ошибка синхронизации валют: ${ex.message}", ex)
         return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.message, request.requestURI)
+    }
+
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun handleNoResourceFound(ex: NoResourceFoundException, request: HttpServletRequest): ResponseEntity<ErrorResponseDto> {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
     }
 
     @ExceptionHandler(Exception::class)

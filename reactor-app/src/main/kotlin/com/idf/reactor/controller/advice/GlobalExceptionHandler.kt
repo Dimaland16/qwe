@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.reactive.resource.NoResourceFoundException
 import reactor.core.publisher.Mono
 
 @RestControllerAdvice
@@ -42,6 +43,11 @@ class GlobalExceptionHandler {
     ): Mono<ResponseEntity<ErrorResponseDto>> {
         log.error("Ошибка синхронизации валют: ${ex.message}", ex)
         return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.message, request.uri.path)
+    }
+
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun handleNoResourceFound(ex: NoResourceFoundException, request: ServerHttpRequest): Mono<ResponseEntity<ErrorResponseDto>> {
+        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).build())
     }
 
     @ExceptionHandler(Exception::class)
